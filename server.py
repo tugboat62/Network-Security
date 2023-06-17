@@ -1,5 +1,10 @@
 import socket
 import threading
+from bitvector_demo import InvSbox, InvMixer, Roc
+from keys import generate_keys
+
+roundkeys = generate_keys()
+print(len(roundkeys))
 
 # Create a TCP/IP socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,10 +25,12 @@ def handle_client(client_socket):
         # Receive data from the client
         data = client_socket.recv(1024)
         if data:
-            print('Received:', data.decode())
-
+            received_tuple = eval(data.decode())
+            print('Received:')
+            print(received_tuple[0])
+            print(received_tuple[1])
             # Echo the received data back to the client
-            client_socket.sendall(data)
+            # client_socket.sendall(data)
         else:
             # No more data from client
             break
