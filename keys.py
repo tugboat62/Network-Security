@@ -1,4 +1,4 @@
-from bitvector_demo import Roc, Sbox
+from bitvector_demo import Sbox
 import copy
 
 
@@ -7,7 +7,6 @@ def generate_keys() -> list:
     file = open('key.txt', 'r')
     key = file.read()
     file.close()
-    key = 'Thats my Kung Fu'
     key = key.encode('utf-8')
 
     if len(key) < 16:
@@ -17,6 +16,8 @@ def generate_keys() -> list:
     if len(key) > 16:
         key = key[:16]
 
+    # print(len(key))
+
     words = []
     for i in range(0, len(key), 4):
         temp = []
@@ -24,6 +25,7 @@ def generate_keys() -> list:
             temp.append((hex(key[i + j])[2:]))
         words.append(temp)
 
+    roc = 0
     for i in range(4, 44):
         temp = []
         for j in range(4):
@@ -31,10 +33,23 @@ def generate_keys() -> list:
         if i % 4 == 0:
             # print(temp)
             temp = temp[1:] + temp[:1]
+
+            # find the rounding constant
+            d = i // 4
+            if d <= 8:
+                const = 2 ** roc
+            else:
+                if d == 9:
+                    const = 0x1B
+                else:
+                    const = 0x36
+            Roc = [const, 0, 0, 0]
+            roc += 1
+
             # print(temp)
             for j in range(4):
                 temp[j] = Sbox[int(temp[j], 16)]
-                temp[j] = temp[j] ^ Roc[j]
+                temp[j] = int(temp[j]) ^ Roc[j]
                 # print(hex(temp[j]))
                 temp[j] = hex(temp[j] ^ int(words[i - 4][j], 16))[2:]
 
@@ -55,4 +70,5 @@ def generate_keys() -> list:
                 temp[k].append(words[4 * i + j][k])
         roundkeys.append(temp)
     # print(roundkeys[0])
+    # print(len(roundkeys))
     return roundkeys

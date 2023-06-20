@@ -1,10 +1,11 @@
 import socket
+import pickle
+import struct
 import threading
 from BitVector import *
-from bitvector_demo import InvSbox, InvMixer, Roc, AES_modulus
+from bitvector_demo import InvSbox, InvMixer, AES_modulus
 from keys import generate_keys
 
-msglen = 16
 encrypted = []
 
 roundkeys = generate_keys()
@@ -38,22 +39,28 @@ def invSubBytes(state):
             state[i][j] = hex(int(InvSbox[int(state[i][j], 16)]))[2:]
 
 def invShiftRows(state):
-    for i in range(4):
-        state[i] = state[i][3:] + state[i][:3]
+    for i in range(1, 4):
+        state[i] = state[i][4-i:] + state[i][:4-i]
 
 def invMixColumns(state):
+    mat = [[], [], [], []]
+    for i in range(4):
+        for j in range(4):
+            mat[i].append(state[i][j])
+
     for i in range(4):
         for j in range(4):
             x = 0
             for k in range(4):
-                bv1 = BitVector(hexstring=state[k][j])
+                bv1 = BitVector(hexstring=mat[k][j])
                 bv2 = InvMixer[i][k]
                 bv3 = bv1.gf_multiply_modular(bv2, AES_modulus, 8)
                 x = x ^ int(bv3)
             state[i][j] = hex(x)[2:]
 
-def printPlainText():
+def printPlainText(msglen):
     temp = ''
+    print('Len of states:', len(states))
     for i in range(len(states)):
         for j in range(4):
             for k in range(4):
@@ -62,44 +69,50 @@ def printPlainText():
                 temp += ch
     print('Decrypted text from client', client_address, ':', temp[:msglen])
 
-def decrypt():
+def decrypt(msglen):
     for i in range(len(encrypted)):
         temp = [[], [], [], []]
         for j in range(16):
             temp[j % 4].append(encrypted[i][j])
         states.append(temp)
 
-    for i in range(len(states)):
-        for j in range(11):
-            if i == 0:
+
+    for j in range(10, -1, -1):
+        for i in range(len(states)):
+            if j == 10:
                 addRoundKey(states[i], j)
                 continue
             invShiftRows(states[i])
             invSubBytes(states[i])
             addRoundKey(states[i], j)
-            if j != 10:
+            if j != 0:
                 invMixColumns(states[i])
 
-    printPlainText()
+    printPlainText(msglen)
 
+
+def receive_data(length):
+    data = b''
+    remaining = length
+    while remaining > 0:
+        chunk = client_socket.recv(remaining)
+        if not chunk:
+            break
+        data += chunk
+        remaining -= len(chunk)
+    return data
 
 def handle_client(client_socket):
     while True:
-        # Receive data from the client
-        data = client_socket.recv(1024)
-        if data:
-            received_tuple = eval(data.decode())
-            print('Received from client', client_address, received_tuple[0])
-            msglen = received_tuple[1]
-            encrypted.append(received_tuple[0])
-            # Echo the received data back to the client
-            # client_socket.sendall(data)
-        else:
-            print('No more data from:', client_address)
-            decrypt()
-            # No more data from client
+        length_data = receive_data(4)
+        if not length_data:
+            decrypt(msglen)
             break
-
+        length = struct.unpack('!I', length_data)[0]
+        serialized_tuple = receive_data(length)
+        received_tuple = pickle.loads(serialized_tuple)
+        msglen = received_tuple[1]
+        encrypted.append(received_tuple[0])
 
     # Close the connection
     client_socket.close()
