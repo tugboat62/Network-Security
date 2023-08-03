@@ -59,10 +59,10 @@ def get_new_passwds(how_many):
 #                       '172.17.0.8', '172.17.0.9', '172.17.0.10', '172.17.0.11'
 
 def get_fresh_ipaddresses(how_many):
-    if debug: return []   
+    if debug: return ['172.17.0.2']   
 
     if how_many == 0: return 0
-    ipaddresses = ['172.17.0.2']
+    ipaddresses = []
     for i in range(how_many):
         first,second,third,fourth = map(lambda x: str(1 + random.randint(0,x)), [223,223,223,223])
         ipaddresses.append( first + '.' + second + '.' + third + '.' + fourth )
@@ -110,6 +110,7 @@ while True:
                     cmd = "grep -ls abracadabra -r"
                     # Now let's look for files that contain the string 'abracadabra'
                     stdin, stdout, stderr = ssh.exec_command(cmd)
+                    print("Debug")
                     error = stderr.readlines()
                     if error:
                         print('Error in executing command: %s' %cmd) 
