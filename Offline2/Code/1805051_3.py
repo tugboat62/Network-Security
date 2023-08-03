@@ -131,10 +131,9 @@ while True:
                     num_lines = all_lines.__len__()
                     for i in range(7):    
                         line1 = random.randint(0, num_lines - 2)
-                        line2 = line1 + 1
                         rand_size = random.randint(10, 20)
-                        random_string = generate_random_string(rand_size)
-                        all_lines = all_lines[:line1+1] + [random_string] + all_lines[line2:]
+                        random_string = '#' + generate_random_string(rand_size)
+                        all_lines = all_lines[:line1+1] + [random_string] + all_lines[line1+1:]
 
                     num_lines = all_lines.__len__()
 
@@ -142,7 +141,7 @@ while True:
                         line1 = random.randint(0, num_lines - 1)
                         rand_size = random.randint(5, 10)
                         line = all_lines[line1]
-                        random_line_with_spaces = line.strip() + ' ' * rand_size + '\n'
+                        random_line_with_spaces = line.strip() + ' ' * rand_size
                         all_lines[line1] = random_line_with_spaces
 
                     file = open('AbraWorm.py', 'w')
