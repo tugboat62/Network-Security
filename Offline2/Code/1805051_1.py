@@ -108,7 +108,7 @@ while True:
                     ssh.connect(ip_address,port=22,username=user,password=passwd,timeout=5)
                     print("\n\nconnected\n")
                     
-                    stdin, stdout, stderr = ssh.exec_command(f"find / -type f -name '*.foo'")
+                    stdin, stdout, stderr = ssh.exec_command("find / -type f -name '*.foo'")
                     for line in stdout:
                         file_list.append(line.strip())
 
