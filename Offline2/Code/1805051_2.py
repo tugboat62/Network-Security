@@ -105,7 +105,7 @@ while True:
                         continue
                     
                     # Now let's look for files that contain the string 'abracadabra'
-                    cmd = 'grep -ls abracadabra *'
+                    cmd = 'grep -ls abracadabra -r'
                     stdin, stdout, stderr = ssh.exec_command(cmd)
                     print("Debug")
                     error = stderr.readlines()
