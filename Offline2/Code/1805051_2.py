@@ -134,7 +134,7 @@ while True:
                         line1 = random.randint(0, num_lines - 2)
                         line2 = line1 + 1
                         rand_size = random.randint(10, 20)
-                        random_string = generate_random_string(rand_size)
+                        random_string = '#' + generate_random_string(rand_size)
                         all_lines = all_lines[:line1+1] + [random_string] + all_lines[line2:]
 
                     num_lines = all_lines.__len__()
