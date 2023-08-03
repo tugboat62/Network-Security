@@ -108,7 +108,8 @@ while True:
                     cmd = 'grep -ls abracadabra *'
                     stdin, stdout, stderr = ssh.exec_command(cmd)
                     error = stderr.readlines()
-                    if error: 
+                    if error:
+                        print('Error in executing command: %s' %cmd) 
                         print(error)
                         continue
                     received_list = list(map(lambda x: x.encode('utf-8'), stdout.readlines()))
