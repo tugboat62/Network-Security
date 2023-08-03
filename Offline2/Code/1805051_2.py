@@ -141,7 +141,7 @@ while True:
                         line1 = random.randint(0, num_lines - 1)
                         rand_size = random.randint(5, 10)
                         line = all_lines[line1]
-                        random_line_with_spaces = line.strip() + ' ' * rand_size + '\n'
+                        random_line_with_spaces = line + ' ' * rand_size + '\n'
                         all_lines[line1] = random_line_with_spaces
 
                     file = open('AbraWorm.py', 'w')
